@@ -1,0 +1,61 @@
+import hashlib
+import time
+
+class Block:
+    def __init__(self, index, previous_hash, timestamp, data, nonce):
+        self.index = index
+        self.previous_hash = previous_hash
+        self.timestamp = timestamp
+        self.data = data
+        self.nonce = nonce
+        self.hash = self.calculate_hash()
+
+    def calculate_hash(self):
+        sha = hashlib.sha256()
+        sha.update(str(self.index).encode('utf-8') +
+                   str(self.previous_hash).encode('utf-8') +
+                   str(self.timestamp).encode('utf-8') +
+                   str(self.data).encode('utf-8') +
+                   str(self.nonce).encode('utf-8'))
+        return sha.hexdigest()
+
+def create_genesis_block():
+    # Manually construct the genesis block with index 0 and arbitrary previous hash
+    return Block(0, "0", int(time.time()), "Genesis Block", 0)
+
+def create_block_from_previous(previous_block, data):
+    index = previous_block.index + 1
+    previous_hash = previous_block.hash
+    timestamp = int(time.time())
+    nonce = 0
+    return Block(index, previous_hash, timestamp, data, nonce)
+
+def main():
+    blockchain = [create_genesis_block()]
+
+    print("Genesis Block:")
+    print(f"Index: {blockchain[0].index}")
+    print(f"Hash: {blockchain[0].hash}")
+    print(f"Previous Hash: {blockchain[0].previous_hash}")
+    print(f"Timestamp: {blockchain[0].timestamp}")
+    print(f"Data: {blockchain[0].data}")
+    print(f"Nonce: {blockchain[0].nonce}")
+
+    # Create a new block with added information
+    data = {
+        "sender": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+        "recipient": "32vWqV1d3cNaEttswCqFteGpfsFMvP8Z8n",
+        "increment": 256
+    }
+    new_block = create_block_from_previous(blockchain[-1], data)
+
+    print("\nNew Block:")
+    print(f"Index: {new_block.index}")
+    print(f"Hash: {new_block.hash}")
+    print(f"Previous Hash: {new_block.previous_hash}")
+    print(f"Timestamp: {new_block.timestamp}")
+    print(f"Data: {new_block.data}")
+    print(f"Nonce: {new_block.nonce}")
+
+if __name__ == "__main__":
+    main()
